@@ -1,5 +1,3 @@
-
-
 ###################################################
 # Exercise 5 - Natural Language Processing 67658  #
 ###################################################
@@ -53,10 +51,10 @@ def linear_classification(portion=1.):
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import accuracy_score
     tf = TfidfVectorizer(stop_words='english', max_features=1000)
-    x_train, y_train, x_test, y_test = get_data(categories=category_dict.keys(), portion=portion)
-
     # Add your code here
-    return
+    x_train, y_train, x_test, y_test = get_data(categories=category_dict.keys(), portion=portion)
+    clf = LogisticRegression(random_state=0).fit(x_train, y_train)
+    return np.mean(clf.predict(x_test) == y_test)
 
 
 # Q2
@@ -133,13 +131,13 @@ if __name__ == "__main__":
     for p in portions:
         print(f"Portion: {p}")
         print(linear_classification(p))
-
-    # Q2
-    print("\nFinetuning results:")
-    for p in portions:
-        print(f"Portion: {p}")
-        print(transformer_classification(portion=p))
-
-    # Q3
-    print("\nZero-shot result:")
-    print(zeroshot_classification())
+    #
+    # # Q2
+    # print("\nFinetuning results:")
+    # for p in portions:
+    #     print(f"Portion: {p}")
+    #     print(transformer_classification(portion=p))
+    #
+    # # Q3
+    # print("\nZero-shot result:")
+    # print(zeroshot_classification())
