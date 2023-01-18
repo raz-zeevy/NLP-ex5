@@ -15,7 +15,6 @@ category_dict = {'comp.graphics': 'computer graphics',
                  'talk.politics.guns': 'politics, guns'
                  }
 
-
 def get_data(categories=None, portion=1.):
     """
     Get data for given categories and portion
@@ -79,7 +78,6 @@ def transformer_classification(portion=1.):
         """
         Dataset object
         """
-
         def __init__(self, encodings, labels):
             self.encodings = encodings
             self.labels = labels
@@ -151,15 +149,21 @@ def zeroshot_classification(portion=1.):
     from transformers import pipeline
     from sklearn.metrics import accuracy_score
     import torch
-    x_train, y_train, x_test, y_test = get_data(
-        categories=category_dict.keys(), portion=portion)
+    x_train, y_train, x_test, y_test = get_data(categories=category_dict.keys(), portion=portion)
     clf = pipeline("zero-shot-classification",
-                   model='cross-encoder/nli-MiniLM2-L6-H768')
+                   model='cross-encoder/nli-MiniLM2-L6-H768',
+                   device='cuda:0' if torch.cuda.is_available() else 'cpu')
     candidate_labels = list(category_dict.values())
 
     # Add your code here
-    # see https://huggingface.co/docs/transformers/v4.25.1/en/main_classes/pipelines#transformers.ZeroShotClassificationPipeline
-    return
+    res_dict = {categoty: i for i, categoty in enumerate(candidate_labels)}
+    # Add your code here
+    y_pred = [clf(x, candidate_labels=candidate_labels) for x in
+              x_test]
+    y_pred = [res_dict[pred['labels'][np.argmax(pred['scores'])]] for pred in
+              y_pred]
+    # Calculate the accuracy
+    return accuracy_score(y_test, y_pred)
 
 
 def question_1():
@@ -202,5 +206,5 @@ if __name__ == "__main__":
     question_2()
 
     # # Q3
-    # print("\nZero-shot result:")
-    # print(zeroshot_classification())
+    print("\nZero-shot result:")
+    print(zeroshot_classification())
